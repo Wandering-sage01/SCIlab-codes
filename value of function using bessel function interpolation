@@ -1,0 +1,7 @@
+xb = 0:1:10;
+yb = besselj(0, xb);
+xi = 3.5;  // find J0(3.5)
+yi = interp1(xb,yb,xi,"linear");
+disp(yi)
+plot(xb,yb,"b-")
+plot(xi,yi,"r*")
