@@ -1,0 +1,43 @@
+clc; clear;
+
+h=197.3; m=940; k=100;
+K=h^2/(2*m);
+
+N=400; R=5;
+dr=R/(N+1);
+r=(1:N)'*dr;
+
+B=[0 5 10];
+W=zeros(N,3);
+
+for j=1:3
+    b=B(j);
+    V=k*r.^2/2+b*r.^3/3;
+
+    H=diag(2*K/dr^2+V)+...
+      diag(-K/dr^2*ones(N-1,1),1)+...
+      diag(-K/dr^2*ones(N-1,1),-1);
+
+    [U,D]=spec(H);
+    [E,I]=gsort(diag(D),"g","i");
+
+    u=U(:,I(1));
+    u=u/sqrt(sum(u.^2)*dr);
+
+    if u(1)<0 then u=-u; end
+
+    W(:,j)=u;
+
+    mprintf("Beta = %g, E0 = %.3f MeV\n",B(j),E(1));
+end
+
+// Plot all three together
+clf();
+plot(r,W(:,1),"r");
+plot(r,W(:,2),"g");
+plot(r,W(:,3),"b");
+
+xlabel("r (fm)");
+ylabel("u(r)");
+title("Anharmonic Oscillator Ground State");
+legend("Beta = 0","Beta = 5","Beta = 10");
