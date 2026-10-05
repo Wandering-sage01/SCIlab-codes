@@ -1,0 +1,41 @@
+clc; clear;
+
+h=1973; m=0.511e6; e=3.795;
+K=h^2/(2*m); N=400; R=30;
+dr=R/(N+1); r=(1:N)'*dr;
+
+A=[3 5 7];
+W=zeros(N,3);
+E0=zeros(1,3);
+
+for j=1:3
+    a=A(j);
+    V=-e^2./r.*exp(-r/a);
+
+    H=diag(2*K/dr^2+V)+...
+      diag(-K/dr^2*ones(N-1,1),1)+...
+      diag(-K/dr^2*ones(N-1,1),-1);
+
+    [U,D]=spec(H);
+    [E,I]=gsort(diag(D),"g","i");
+
+    u=U(:,I(1));
+    u=u/sqrt(sum(u.^2)*dr);
+
+    if u(1)<0 then u=-u; end
+
+    W(:,j)=u;
+    E0(j)=E(1);
+
+    mprintf("a = %g A, E0 = %.3f eV\n",a,E(1));
+end
+
+clf();
+plot(r,W(:,1),"r");
+plot(r,W(:,2),"g");
+plot(r,W(:,3),"b");
+
+xlabel("r (Angstrom)");
+ylabel("u(r)");
+title("Screened Coulomb Potential");
+legend("a = 3 A","a = 5 A","a = 7 A");
